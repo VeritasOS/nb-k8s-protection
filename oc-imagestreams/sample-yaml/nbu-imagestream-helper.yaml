@@ -1,0 +1,64 @@
+---
+# Used for communicating with K8s API Server.
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: internal-kubectl-sa
+---
+# Used for communicating with K8s API Server.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: modifier-rolebinding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+- kind: ServiceAccount
+  name: internal-kubectl-sa
+  namespace: test-imgstream # TODO : Update with application namespace name.
+---
+# Used for providing external repository details along with credentials for image push/pull.
+apiVersion: v1
+kind: Secret
+metadata:
+  name: external-repo-details
+stringData:
+  extrepo.name: "external.repo.com" # TODO : Update with your environment details.
+  extrepo.namespace: "externalprojectname" # TODO : Update with your environment details.
+  extrepo.creds: "username:password" # TODO : Update with your environment details.
+type: Opaque
+---
+# Facilitates backup and restore of openshift imagestreams in the application namespace.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nb-patch-deploy
+  labels:
+    app: netbackup-patch-pod
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: netbackup-patch-pod
+  template:
+    metadata:
+      labels:
+        app: netbackup-patch-pod
+      annotations:
+        pre.hook.backup.velero.io/command: '["/bin/bash", "-c", "/pre-backup-hook-updater.sh"]'
+    spec:
+      serviceAccountName: internal-kubectl-sa
+      containers:
+        - name: is-helper
+          image: myartifactory.com/imagestream-helper:tag # TODO: Please update the image details.
+          command: [ "/bin/bash", "-c", "/restore-updater.sh" ]
+          volumeMounts:
+            - mountPath: /ext-repo-details
+              name: external-repo-details
+      volumes:
+        - secret:
+            optional: false
+            secretName: external-repo-details
+          name: external-repo-details
