@@ -1,0 +1,13 @@
+apiVersion: netbackup.veritas.com/v1
+kind: BackupServerCert
+metadata:
+  name: backupservercert-{{ required "nbprimaryserver value is required" .Values.netbackupkops.containers.manager.nbprimaryserver }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  clusterName: {{ required "k8scluster value is required" .Values.netbackupkops.containers.manager.k8sCluster }}:{{ .Values.netbackupkops.containers.manager.k8sPort }}
+  backupServer: {{ required "nbprimaryserver value is required" .Values.netbackupkops.containers.manager.nbprimaryserver }}
+  certificateOperation: Create
+  certificateType: {{ required "certificateType value is required" .Values.netbackupkops.containers.manager.certificateType }}
+  nbcaAttributes:
+    nbcaCreateOptions:
+      secretName: datamover-secret-{{ .Values.netbackupkops.containers.manager.nbprimaryserver }}

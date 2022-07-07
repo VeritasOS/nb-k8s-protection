@@ -1,0 +1,11 @@
+This script will establish connectivity between NetBackup and K8s cluster
+It must be run from linux bastion node which has kubeadmin access to k8s cluster
+
+Pre-requisites:
+python3 must be installed on bastion node
+
+# Install required modules using below command
+pip3 install -r requirements.txt
+
+# Update values required in data.json and run
+python installkops.py

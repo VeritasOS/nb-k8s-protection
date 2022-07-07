@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ required "nbprimaryserver value is required" .Values.netbackupkops.containers.manager.nbprimaryserver }}
+  namespace: {{ .Release.Namespace }}
+data:
+  version: "1"
+  datamover.properties: {{ required "datamoverimage value is required" .Values.netbackupkops.containers.manager.datamoverimage }}

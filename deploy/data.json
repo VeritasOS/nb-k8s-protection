@@ -1,0 +1,15 @@
+{
+    "data": {
+        "authPayload": {
+            "userName": "<NB admin user>",
+            "password": ""
+        },
+        "kopsimage": "<URL of kops image>",
+        "datamoverimage": "image=<URL of datamover image>",
+        "nbprimaryserver": "<NB primary server fqdn>",
+        "k8sCluster": "<K8s cluster api fqdn>",
+        "namespace": "<namespace  value created for kops>",
+        "k8sPort": "<k8s cluster port>",
+	"helmChartDirPath": "<absolute pah to helm chart /netbackupkops-helm-chart/>"
+    }
+}
